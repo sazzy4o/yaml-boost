@@ -18,7 +18,8 @@ const loadRecursive = (dir, relDir, data, vars) => {
     );
     // load requires
     const match = (
-      /^\${(require|file|fileFn)\(([~^]?[a-zA-Z\d._\-@/]+?)\)(?::([a-zA-Z\d.]+?))?(?:, ([a-zA-Z\d=\-&/.:[\],]+?))?}$/g
+      // eslint-disable-next-line max-len
+      /^\${(require|file|fileFn|env)(?:\(([~^]?[a-zA-Z\d._\-@/]+?)\))?(?::([a-zA-Z\d.]+?))?(?:, ([a-zA-Z\d=\-&/.:[\],]+?))?}/g
     ).exec(result);
     if (match) {
       const varsNew = {
@@ -41,12 +42,24 @@ const loadRecursive = (dir, relDir, data, vars) => {
         if (match[1] === 'fileFn') {
           loaded = loaded(varsNew);
         }
+      } else if (match[1] === 'env') {
+        loaded = process.env;
       } else {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         loaded = require(match[2]);
       }
       const target = match[3] ? get(loaded, match[3]) : loaded;
       result = loadRecursive(dir, newRelDir, typeof target === 'function' ? target() : target, varsNew);
+
+      const beforeString = data.substring(0, match.index);
+      const afterString = data.substring(match.index + match[1].length);
+      if (beforeString.length > 0 || afterString.length > 0) {
+        if (typeof result === 'string') {
+          result = beforeString + result + afterString;
+        } else {
+          throw new TypeError(`Cannot combine string and ${typeof result}`);
+        }
+      }
     }
   }
   if (result instanceof Object) {
