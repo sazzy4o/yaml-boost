@@ -19,7 +19,7 @@ const loadRecursive = (dir, relDir, data, vars) => {
     // load requires 1
     const match = (
       // eslint-disable-next-line max-len
-      /^\${(require|file|fileFn|env)(?:\(([~^]?[a-zA-Z\d._\-@/]+?)\))?(?::([a-zA-Z\d.]+?))?(?:, ([a-zA-Z\d=\-&/.:[\],]+?))?}/g
+      /\${(require|file|fileFn|env)(?:\(([~^]?[a-zA-Z\d._\-@/]+?)\))?(?::([a-zA-Z\d.]+?))?(?:, ([a-zA-Z\d=\-&/.:[\],]+?))?}/g
     ).exec(result);
     if (match) {
       const varsNew = {
@@ -52,7 +52,7 @@ const loadRecursive = (dir, relDir, data, vars) => {
       result = loadRecursive(dir, newRelDir, typeof target === 'function' ? target() : target, varsNew);
 
       const beforeString = data.substring(0, match.index);
-      const afterString = data.substring(match.index + match[1].length);
+      const afterString = data.substring(match.index + match[0].length);
       if (beforeString.length > 0 || afterString.length > 0) {
         if (typeof result === 'string') {
           result = beforeString + result + afterString;
