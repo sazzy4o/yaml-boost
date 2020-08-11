@@ -16,7 +16,7 @@ const loadRecursive = (dir, relDir, data, vars) => {
       /\${opt:([a-zA-Z0-9]+?)(?:, ["']([a-zA-Z0-9\-.]+?)["'])?}/g,
       (match, k, v) => get(vars, k, v || match)
     );
-    // load requires
+    // load requires 1
     const match = (
       // eslint-disable-next-line max-len
       /^\${(require|file|fileFn|env)(?:\(([~^]?[a-zA-Z\d._\-@/]+?)\))?(?::([a-zA-Z\d.]+?))?(?:, ([a-zA-Z\d=\-&/.:[\],]+?))?}/g
